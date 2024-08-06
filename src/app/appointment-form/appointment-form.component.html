@@ -1,0 +1,14 @@
+<form [formGroup]="appointmentForm" (ngSubmit)="addOrEditAppointment()">
+    <mat-form-field appearance="fill">
+      <mat-label>Time</mat-label>
+      <input matInput formControlName="time" type="time">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description">
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">
+      {{ isEditing ? 'Edit' : 'Add' }} Appointment
+    </button>
+  </form>
+  
