@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface Appointment {
-  id: number | undefined;
+  id: number;
   time: string;
   description: string;
   views: number;

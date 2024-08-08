@@ -5,10 +5,10 @@ import { Appointment } from '../services/appointment.service';
 @Component({
   selector: 'app-appointment-form',
   templateUrl: './appointment-form.component.html',
-  styleUrls: ['./appointment-form.component.css']
+  styleUrls: ['./appointment-form.component.css'],
 })
 export class AppointmentFormComponent {
-  @Input() selectedDate: string;
+  @Input() selectedDate: string | undefined;
   @Output() appointmentAdded = new EventEmitter<Appointment>();
   @Output() appointmentEdited = new EventEmitter<Appointment>();
   
@@ -27,7 +27,7 @@ export class AppointmentFormComponent {
     if (this.appointmentForm.valid) {
       const { time, description } = this.appointmentForm.value;
       const appointment: Appointment = {
-        id: this.isEditing ? this.editingAppointmentId : new Date().getTime(),
+        id: this.isEditing ? (this.editingAppointmentId ? this.editingAppointmentId : new Date().getTime()) : new Date().getTime(),
         time,
         description,
         views: 0

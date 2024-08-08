@@ -1,17 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Appointment, AppointmentService } from '../services/appointment.service';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css']
+  styleUrls: ['./calendar.component.css'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    BrowserModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    DragDropModule,
+    RouterModule,
+  ]
 })
 export class CalendarComponent implements OnInit {
   currentMonth: number;
   currentYear: number;
   daysOfWeek: string[];
   calendarDates: (number | null)[] = [];
+  monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   selectedDate: string | null = null;
   appointmentForm: FormGroup;
   isEditing: boolean = false;
@@ -22,7 +43,7 @@ export class CalendarComponent implements OnInit {
     this.currentMonth = today.getMonth();
     this.currentYear = today.getFullYear();
     this.daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
+    
     this.appointmentForm = this.fb.group({
       time: ['', Validators.required],
       description: ['', Validators.required]
@@ -77,10 +98,10 @@ export class CalendarComponent implements OnInit {
     return this.appointmentService.getAppointments(date);
   }
 
-  addAppointment() {
+    addAppointment() {
     if (this.selectedDate && this.appointmentForm.valid) {
       const { time, description } = this.appointmentForm.value;
-      const id = this.isEditing ? this.editingAppointmentId : new Date().getTime();
+      const id = this.isEditing && this.editingAppointmentId !== null ? this.editingAppointmentId : new Date().getTime();
       
       if (this.isEditing) {
         this.appointmentService.updateAppointment(this.selectedDate, { id, time, description, views: 0 });
@@ -92,6 +113,7 @@ export class CalendarComponent implements OnInit {
       this.appointmentForm.reset();
     }
   }
+
 
   deleteAppointment(date: string, id: number) {
     this.appointmentService.deleteAppointment(date, id);
