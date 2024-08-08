@@ -18,7 +18,6 @@ import { CalendarComponent } from './calendar/calendar.component';
   imports:[    
     CalendarComponent,
     CommonModule,
-    BrowserModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
