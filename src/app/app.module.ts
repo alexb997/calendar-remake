@@ -16,21 +16,10 @@ import { routes } from './app.routes';
 
 @NgModule({
   declarations: [
-    AppComponent,
     AppointmentFormComponent,
   ],
   imports: [
-    CalendarComponent,
-    CommonModule,
-    BrowserModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    DragDropModule,
-    RouterModule,
-    RouterOutlet
+    AppComponent,
   ],
   providers: []
 })
