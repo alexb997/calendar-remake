@@ -36,6 +36,7 @@ export class CalendarComponent implements OnInit {
   selectedDate: string | null = null;
   appointmentForm: FormGroup;
   isEditing: boolean = false;
+  editingAppointment: Appointment | null = null;
   editingAppointmentId: number | null = null;
 
   constructor(private fb: FormBuilder, private appointmentService: AppointmentService) {
@@ -46,7 +47,9 @@ export class CalendarComponent implements OnInit {
     
     this.appointmentForm = this.fb.group({
       time: ['', Validators.required],
-      description: ['', Validators.required]
+      description: ['', Validators.required],
+      period: ['none'],
+      endDate: ['']   
     });
   }
 
@@ -100,9 +103,10 @@ export class CalendarComponent implements OnInit {
 
   addAppointment() {
     if (this.selectedDate && this.appointmentForm.valid) {
-      const { time, description, period } = this.appointmentForm.value;
+      const { time, description, period, endDate } = this.appointmentForm.value;
       const id = this.isEditing && this.editingAppointmentId !== null ? this.editingAppointmentId : new Date().getTime();
       const selectedDateObj = new Date(this.selectedDate);
+      const endDateObj = endDate ? new Date(endDate) : null;
       
       const addSingleAppointment = (date: Date) => {
         this.appointmentService.addAppointment(date.toISOString().split('T')[0], { id, time, description, views: 0 });
@@ -110,25 +114,20 @@ export class CalendarComponent implements OnInit {
 
       if (period === 'none') {
         addSingleAppointment(selectedDateObj);
-      } else if (period === 'daily') {
-        const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-        for (let day = selectedDateObj.getDate(); day <= daysInMonth; day++) {
-          const date = new Date(this.currentYear, this.currentMonth, day);
-          addSingleAppointment(date);
-        }
-      } else if (period === 'weekly') {
-        for (let i = 0; i < 4; i++) {
-          const date = new Date(selectedDateObj);
-          date.setDate(date.getDate() + i * 7);
-          if (date.getMonth() === this.currentMonth) {
-            addSingleAppointment(date);
+      } else {
+        let currentDate = new Date(selectedDateObj);
+        if( endDateObj){
+          while (currentDate <= endDateObj) {
+            addSingleAppointment(currentDate);
+
+            if (period === 'daily') {
+              currentDate.setDate(currentDate.getDate() + 1);
+            } else if (period === 'weekly') {
+              currentDate.setDate(currentDate.getDate() + 7);
+            } else if (period === 'monthly') {
+              currentDate.setMonth(currentDate.getMonth() + 1);
+            }
           }
-        }
-      } else if (period === 'monthly') {
-        for (let i = 0; i < 3; i++) {
-          const date = new Date(selectedDateObj);
-          date.setMonth(date.getMonth() + i);
-          addSingleAppointment(date);
         }
       }
 
@@ -157,4 +156,12 @@ export class CalendarComponent implements OnInit {
       this.appointmentForm.setValue({ time: appointment.time, description: appointment.description });
     }
   }
+
+  handleAppointmentUpdated() {
+    this.editingAppointment = null;
+}
+
+handleEditCancelled() {
+    this.editingAppointment = null;
+}
 }

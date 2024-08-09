@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface Appointment {
   id: number;
@@ -48,13 +48,39 @@ export class AppointmentService {
     this.saveAppointments();
   }
 
-  updateAppointment(date: string, updatedAppointment: Appointment) {
+  updateAppointment(oldDate: string, updatedAppointment: Appointment, newDate: string): Observable<void>
     if (this.appointments[date]) {
       this.appointments[date] = this.appointments[date].map(appointment =>
         appointment.id === updatedAppointment.id ? updatedAppointment : appointment
       );
       this.saveAppointments();
     }
+    return this.updateAppointmentWithDate(oldDate, updatedAppointment.id, newDate, {
+      time: updatedAppointment.time,
+      description: updatedAppointment.description
+    });
+  }
+
+  updateAppointmentWithDate(oldDate: string, appointmentId: number, newDate: string, updatedFields: Partial<Appointment>): Observable<void> {
+    const oldAppointments = this.appointments[oldDate] || [];
+    const appointmentIndex = oldAppointments.findIndex(app => app.id === appointmentId);
+
+    if (appointmentIndex !== -1) {
+      const [appointment] = oldAppointments.splice(appointmentIndex, 1);
+
+      if (oldAppointments.length === 0) {
+        delete this.appointments[oldDate];
+      }
+
+      if (!this.appointments[newDate]) {
+        this.appointments[newDate] = [];
+      }
+      this.appointments[newDate].push({ ...appointment, ...updatedFields });
+
+      this.appointmentsSubject.next(this.appointments);
+    }
+
+    return of();
   }
 
   deleteAppointment(date: string, id: number) {

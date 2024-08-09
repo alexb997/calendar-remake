@@ -1,0 +1,21 @@
+<form [formGroup]="appointmentForm" (ngSubmit)="save()">
+    <mat-form-field>
+      <mat-label>Time</mat-label>
+      <input matInput formControlName="time" type="time">
+    </mat-form-field>
+  
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description">
+    </mat-form-field>
+  
+    <mat-form-field>
+      <mat-label>Date</mat-label>
+      <input matInput formControlName="date" [matDatepicker]="picker">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit">Save</button>
+    <button mat-button type="button" (click)="cancel()">Cancel</button>
+  </form>

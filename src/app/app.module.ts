@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { AppointmentFormComponent } from './appointment-form/appointment-form.component';
 import { routes } from './app.routes';
+import { EditAppointmentComponent } from './edit-appointment/edit-appointment.component';
 
 @NgModule({
   declarations: [

@@ -37,29 +37,35 @@
       </div>
     </div>
 
-  <div *ngIf="selectedDate" class="appointment-section">
-    <div class="appointment-form">
-      <h3>Appointments for {{ selectedDate }}</h3>
-      <form [formGroup]="appointmentForm" (ngSubmit)="addAppointment()">
-        <mat-form-field appearance="fill">
-          <mat-label>Time</mat-label>
-          <input matInput formControlName="time" type="time">
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Description</mat-label>
-          <input matInput formControlName="description">
-        </mat-form-field>
-        <mat-form-field appearance="fill">
-          <mat-label>Repeat</mat-label>
-          <mat-select formControlName="period">
-            <mat-option value="none">None</mat-option>
-            <mat-option value="daily">Daily</mat-option>
-            <mat-option value="weekly">Weekly</mat-option>
-            <mat-option value="monthly">Monthly</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button mat-raised-button color="primary" type="submit">Add Appointment</button>
-      </form>
-    </div>
-  </div>
+    <div *ngIf="selectedDate" class="appointment-section">
+      <div class="appointment-form">
+        <h3>Appointments for {{ selectedDate }}</h3>
+        <form [formGroup]="appointmentForm" (ngSubmit)="addAppointment()">
+          <mat-form-field appearance="fill">
+            <mat-label>Time</mat-label>
+            <input matInput formControlName="time" type="time">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description">
+          </mat-form-field>
+          <!-- New Period Drop-down -->
+          <mat-form-field appearance="fill">
+            <mat-label>Repeat</mat-label>
+            <mat-select formControlName="period">
+              <mat-option value="none">None</mat-option>
+              <mat-option value="daily">Daily</mat-option>
+              <mat-option value="weekly">Weekly</mat-option>
+              <mat-option value="monthly">Monthly</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!-- New End Date Input -->
+          <mat-form-field appearance="fill" *ngIf="appointmentForm.get('period')?.value !== 'none'">
+            <mat-label>End Date</mat-label>
+            <input matInput formControlName="endDate" type="date">
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">Add Appointment</button>
+        </form>
+      </div>
+    </div>    
 </div>
