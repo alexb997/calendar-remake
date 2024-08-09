@@ -49,6 +49,15 @@
           <mat-label>Description</mat-label>
           <input matInput formControlName="description">
         </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Repeat</mat-label>
+          <mat-select formControlName="period">
+            <mat-option value="none">None</mat-option>
+            <mat-option value="daily">Daily</mat-option>
+            <mat-option value="weekly">Weekly</mat-option>
+            <mat-option value="monthly">Monthly</mat-option>
+          </mat-select>
+        </mat-form-field>
         <button mat-raised-button color="primary" type="submit">Add Appointment</button>
       </form>
     </div>

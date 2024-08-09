@@ -8,6 +8,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-calendar',
@@ -16,6 +17,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule,
+    MatOptionModule,
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
@@ -96,18 +98,40 @@ export class CalendarComponent implements OnInit {
     return this.appointmentService.getAppointments(date);
   }
 
-    addAppointment() {
+  addAppointment() {
     if (this.selectedDate && this.appointmentForm.valid) {
-      const { time, description } = this.appointmentForm.value;
+      const { time, description, period } = this.appointmentForm.value;
       const id = this.isEditing && this.editingAppointmentId !== null ? this.editingAppointmentId : new Date().getTime();
+      const selectedDateObj = new Date(this.selectedDate);
       
-      if (this.isEditing) {
-        this.appointmentService.updateAppointment(this.selectedDate, { id, time, description, views: 0 });
-        this.isEditing = false;
-        this.editingAppointmentId = null;
-      } else {
-        this.appointmentService.addAppointment(this.selectedDate, { id, time, description, views: 0 });
+      const addSingleAppointment = (date: Date) => {
+        this.appointmentService.addAppointment(date.toISOString().split('T')[0], { id, time, description, views: 0 });
+      };
+
+      if (period === 'none') {
+        addSingleAppointment(selectedDateObj);
+      } else if (period === 'daily') {
+        const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+        for (let day = selectedDateObj.getDate(); day <= daysInMonth; day++) {
+          const date = new Date(this.currentYear, this.currentMonth, day);
+          addSingleAppointment(date);
+        }
+      } else if (period === 'weekly') {
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(selectedDateObj);
+          date.setDate(date.getDate() + i * 7);
+          if (date.getMonth() === this.currentMonth) {
+            addSingleAppointment(date);
+          }
+        }
+      } else if (period === 'monthly') {
+        for (let i = 0; i < 3; i++) {
+          const date = new Date(selectedDateObj);
+          date.setMonth(date.getMonth() + i);
+          addSingleAppointment(date);
+        }
       }
+
       this.appointmentForm.reset();
     }
   }
