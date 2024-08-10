@@ -1,15 +1,16 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Appointment } from '../form-appointment/appointment.model';
+import { AppointmentService } from '../service/appointment.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Appointment, AppointmentService } from '../services/appointment.service';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-edit-appointment',
-  templateUrl: './edit-appointment.component.html',
-  styleUrls: ['./edit-appointment.component.css'],
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -18,47 +19,58 @@ import { Appointment, AppointmentService } from '../services/appointment.service
     ReactiveFormsModule,
     MatButtonModule
   ],
+  templateUrl: './edit-appointment.component.html',
+  styleUrls: ['./edit-appointment.component.css'],
+  providers: [ DatePipe ]
 })
-export class EditAppointmentComponent implements OnInit {
-  @Input() appointment!: Appointment;
-  @Input() selectedDate!: string;
+
+export class EditAppointmentComponent {
+  @Input() appointment: Appointment | null = null;
+  @Input() selectedDate: string | null = null;
+  @Input() newDate: string | null =null;
   @Output() appointmentUpdated = new EventEmitter<void>();
   @Output() editCancelled = new EventEmitter<void>();
 
-  appointmentForm!: FormGroup;
+  appointmentForm: FormGroup;
 
-  constructor(
-    private fb: FormBuilder,
-    private appointmentService: AppointmentService
-  ) {}
-
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService,private datePipe: DatePipe) {
+    console.log(this.selectedDate);
     this.appointmentForm = this.fb.group({
-      time: [this.appointment.time, Validators.required],
-      description: [this.appointment.description, Validators.required],
-      date: [new Date(this.selectedDate), Validators.required]
+      time: ['', Validators.required],
+      description: ['', Validators.required],
+      date: ['', Validators.required]
     });
   }
 
-  save(): void {
-    if (this.appointmentForm.valid) {
-      const { time, description, date } = this.appointmentForm.value;
-      const newDate = this.formatDate(date);
-      this.appointmentService.updateAppointment(this.selectedDate, {
-        ...this.appointment,
-        time,
-        description
-      }, newDate).subscribe(() => {
-        this.appointmentUpdated.emit();
+  ngOnChanges() {
+    if (this.appointment) {
+      this.appointmentForm.patchValue({
+        time: this.appointment.time,
+        description: this.appointment.description,
+        date: this.selectedDate
       });
     }
   }
 
-  cancel(): void {
-    this.editCancelled.emit();
+  formatDateToYYYYMMDD(date: Date): string {
+    return this.datePipe.transform(date, 'yyyy-M-d') || '';
   }
 
-  private formatDate(date: Date): string {
-    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  save() {
+    if (this.appointment && this.selectedDate) {
+      const newDate = this.formatDateToYYYYMMDD(this.appointmentForm.get('date')?.value);
+      const updatedAppointment: Appointment = {
+        id: this.appointment.id,
+        time: this.appointmentForm.get('time')?.value,
+        description: this.appointmentForm.get('description')?.value,
+      };
+
+      this.appointmentService.updateAppointment(this.selectedDate, updatedAppointment,newDate);
+      console.log(updatedAppointment)
+    }
+  }
+
+  cancel() {
+    this.editCancelled.emit();
   }
 }

@@ -1,0 +1,23 @@
+<div *ngIf="selectedDate" class="appointment-section">
+    <div class="appointment-form">
+      <h3>Add Appointment for {{ selectedDate }}</h3>
+      <form [formGroup]="appointmentForm" (ngSubmit)="addAppointment()">
+        <mat-form-field appearance="fill">
+          <mat-label>Time</mat-label>
+          <input matInput formControlName="time" type="time">
+          <mat-error *ngIf="appointmentForm.controls['time'].hasError('required')">
+            Time is required
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Description</mat-label>
+          <input matInput formControlName="description">
+          <mat-error *ngIf="appointmentForm.controls['description'].hasError('required')">
+            Description is required
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Add Appointment</button>
+      </form>
+    </div>
+  </div>
+  

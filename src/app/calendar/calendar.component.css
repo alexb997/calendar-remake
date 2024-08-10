@@ -1,33 +1,55 @@
 .calendar-container {
   display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 10px;
+  grid-template-areas:
+    "header header"
+    "dates days";
 }
 
 .calendar-header {
+  grid-area: header;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .calendar-grid {
+  grid-area: dates;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 12px;
+  max-width: 40vw;
 }
 
-.calendar-day, .calendar-date {
-  text-align: center;
-  padding: 10px;
+.calendar-day,
+.calendar-date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ddd;
 }
 
-.calendar-date.empty {
-  background-color: #f0f0f0;
+.empty {
+  border: none;
+}
+
+.appointment-section {
+  width: 80%;
+  padding-left: 10%;
+}
+
+.appointment-form {
+  max-width: 40%;
+}
+
+.appointment-list {
+  display: grid;
+  gap: 8px;
 }
 
 .appointment-item {
-  background-color: #e0f7fa;
-  margin-top: 5px;
-  padding: 5px;
-  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
 }
