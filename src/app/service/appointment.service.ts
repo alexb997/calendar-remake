@@ -18,6 +18,7 @@ export class AppointmentService {
       this.appointments[date] = [];
     }
     this.appointments[date].push(appointment);
+    this.appointmentsSubject.next(this.appointments);
     console.log(this.appointments$);
   }
 

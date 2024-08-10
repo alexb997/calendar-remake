@@ -6,6 +6,33 @@
 }
 
 .calendar-header {
+  border-bottom: 2px solid #eeeeee;
+  padding-bottom: 10px;
+}
+
+.calendar-day {
+  background-color: #f0f0f0;
+}
+
+.calendar-date {
+  padding: 15px;
+  font-size: 1.2rem;
+  color: #616161;
+}
+
+.calendar-date.selected {
+  background-color: #42a5f5;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.appointment-list h3 {
+  font-size: 1.2rem;
+  color: #424242;
+  margin-bottom: 10px;
+}
+
+.calendar-header {
   grid-area: header;
   display: flex;
   justify-content: space-between;
