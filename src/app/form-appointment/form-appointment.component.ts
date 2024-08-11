@@ -41,7 +41,7 @@ export class FormAppointmentComponent {
     if (this.selectedDate && this.appointmentForm.valid) {
       const { time, description, date } = this.appointmentForm.value;
       // const { time, description, date, repetition, repeatUntil } = this.appointmentForm.value;
-      const newDate = this.formatDate(date);
+      // const newDate = this.formatDate(date);
       // if(repetition != 'none'){
       //   this.createRepeatedAppointments(newDate, time, description, repetition, repeatUntil);
       // }

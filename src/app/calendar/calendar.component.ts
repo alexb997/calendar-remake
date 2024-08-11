@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
@@ -11,6 +10,8 @@ import { AppointmentService } from '../service/appointment.service';
 import { EditAppointmentComponent } from '../edit-appointment/edit-appointment.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+
 
 @Component({
   selector: 'app-calendar',
@@ -37,9 +38,11 @@ export class CalendarComponent {
   daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
   monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   calendarDates: (number | null)[] = [];
+  hours: string[] = [];
 
   constructor(private appointmentService: AppointmentService) {
     this.loadCalendar();
+    this.generateHours();
   }
 
   loadCalendar() {
@@ -47,6 +50,21 @@ export class CalendarComponent {
     const daysInMonth = new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
 
     this.calendarDates = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
+  }
+
+  generateHours() {
+    this.hours = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+  }
+
+  hasAppointment(hour: string): boolean {
+    if (!this.selectedDate) return false;
+    return this.getAppointmentsForHour(hour).length > 0;
+  }
+
+  getAppointmentsForHour(hour: string): Appointment[] {
+    if (!this.selectedDate) return [];
+    const appointments = this.appointmentService.getAppointmentsForDate(this.selectedDate);
+    return appointments.filter(appointment => appointment.time.startsWith(hour));
   }
 
   selectDate(date: number | null) {
@@ -106,4 +124,23 @@ export class CalendarComponent {
     this.editingAppointment = null;
   }
 
+  drop2(event: CdkDragDrop<Appointment[]>, targetHour: string) {
+    const appointments = this.getAppointmentsForHour(targetHour);
+    
+    if (event.previousContainer === event.container) {
+      moveItemInArray(appointments, event.previousIndex, event.currentIndex);
+    } else {
+      const appointment = event.previousContainer.data[event.previousIndex];
+      const targetDate = this.selectedDate!;
+
+      this.appointmentService.updateAppointment(
+        targetDate, 
+        { ...appointment, time: `${targetHour}:${appointment.time.split(':')[1]}` }, 
+        targetDate
+      );
+      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+    }
+
+    this.appointmentService.updateAppointments(this.selectedDate!, appointments);
+  }
 }
