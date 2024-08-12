@@ -64,6 +64,7 @@ export class CalendarComponent {
   getAppointmentsForHour(hour: string): Appointment[] {
     if (!this.selectedDate) return [];
     const appointments = this.appointmentService.getAppointmentsForDate(this.selectedDate);
+    console.log(appointments.filter(appointment => appointment.time.startsWith(hour)));
     return appointments.filter(appointment => appointment.time.startsWith(hour));
   }
 

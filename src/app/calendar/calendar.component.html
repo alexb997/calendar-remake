@@ -29,29 +29,12 @@
     (appointmentUpdated)="handleAppointmentUpdated()"
     (editCancelled)="handleEditCancelled()">
   </app-edit-appointment>
-
+</div>
+  
+<div class="day-view-container" *ngIf="selectedDate">
   <div class="appointment-list">
     <h3>Appointments for {{ selectedDate }}</h3>
   </div>
-  <div class="day-view-container">
-  <div class="time-slot" *ngFor="let hour of hours">
-    <div class="time-label">{{ hour }}</div>
-    <div class="appointment-slot" [ngClass]="{ 'has-appointment': hasAppointment(hour) }">
-      <ng-container *ngFor="let appointment of getAppointmentsForHour(hour)">
-        <div class="appointment-item">
-          <strong>{{ appointment.time }}</strong>: {{ appointment.description }}
-          <button mat-icon-button (click)="startEditing(selectedDate!, appointment)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteAppointment(selectedDate!, appointment.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-
-  <div class="day-view-container">
     <div class="time-slot" *ngFor="let hour of hours">
       <div class="time-label">{{ hour }}</div>
       <div class="appointment-slot"
@@ -74,6 +57,3 @@
 
     </div>
   </div>
-</div>
-  
-</div>

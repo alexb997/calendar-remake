@@ -32,23 +32,14 @@ export class FormAppointmentComponent {
     this.appointmentForm = this.fb.group({
       time: ['', Validators.required],
       description: ['', Validators.required],
-      // repetition: ['none'], 
-      // repeatUntil: [null]
     });
   }
 
   addAppointment() {
     if (this.selectedDate && this.appointmentForm.valid) {
-      const { time, description, date } = this.appointmentForm.value;
-      // const { time, description, date, repetition, repeatUntil } = this.appointmentForm.value;
-      // const newDate = this.formatDate(date);
-      // if(repetition != 'none'){
-      //   this.createRepeatedAppointments(newDate, time, description, repetition, repeatUntil);
-      // }
-      // else{
+      const { time, description } = this.appointmentForm.value;
         this.appointmentService.addAppointment(this.selectedDate, time, description);
         this.appointmentForm.reset();
-      // }
       
     }
   }
