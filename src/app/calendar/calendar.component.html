@@ -1,4 +1,9 @@
+
+
 <div class="calendar-container">
+  <div class="theme-toggle">
+    <mat-slide-toggle (change)="toggleDarkMode($event.checked)">Dark Mode</mat-slide-toggle>
+  </div>
   <div class="calendar-header">
     <button mat-icon-button (click)="previousMonth()">
       <mat-icon>chevron_left</mat-icon>

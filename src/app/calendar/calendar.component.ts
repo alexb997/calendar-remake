@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
@@ -11,6 +11,7 @@ import { EditAppointmentComponent } from '../edit-appointment/edit-appointment.c
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
 @Component({
@@ -25,7 +26,8 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
     EditAppointmentComponent,
     MatNativeDateModule,
     MatDatepickerModule,
-    DragDropModule
+    DragDropModule,
+    MatSlideToggleModule
   ],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
@@ -39,10 +41,16 @@ export class CalendarComponent {
   monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   calendarDates: (number | null)[] = [];
   hours: string[] = [];
+  isDarkMode: boolean = false;
 
-  constructor(private appointmentService: AppointmentService) {
+  constructor(private appointmentService: AppointmentService, private renderer: Renderer2) {
     this.loadCalendar();
     this.generateHours();
+  }
+
+  ngOnInit(): void {
+    this.isDarkMode = localStorage.getItem('darkMode') === 'true';
+    this.applyTheme();
   }
 
   loadCalendar() {
@@ -143,5 +151,20 @@ export class CalendarComponent {
     }
 
     this.appointmentService.updateAppointments(this.selectedDate!, appointments);
+  }
+
+  toggleDarkMode(isDarkMode: boolean) {
+    this.isDarkMode = isDarkMode;
+    localStorage.setItem('darkMode', String(this.isDarkMode));
+    this.applyTheme();
+    console.log("Going dark!")
+  }
+
+  applyTheme() {
+    if (this.isDarkMode) {
+      this.renderer.addClass(document.body, 'dark-mode');
+    } else {
+      this.renderer.removeClass(document.body, 'dark-mode');
+    }
   }
 }
