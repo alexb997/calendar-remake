@@ -1,43 +1,42 @@
 import { Component, Renderer2, OnInit } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { FormAppointmentComponent } from '../form-appointment/form-appointment.component';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Appointment } from '../form-appointment/appointment.model';
 import { AppointmentService } from '../service/appointment.service';
 import { EditAppointmentComponent } from '../edit-appointment/edit-appointment.component';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
+import { FormAppointmentComponent } from '../form-appointment/form-appointment.component';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
   imports: [
     RouterOutlet,
+    CommonModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule,
-    FormAppointmentComponent,
-    EditAppointmentComponent,
     MatNativeDateModule,
     MatDatepickerModule,
     DragDropModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    FormAppointmentComponent,
+    EditAppointmentComponent
   ],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css']
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
+  [x: string]: any;
   currentMonth: number = new Date().getMonth();
   currentYear: number = new Date().getFullYear();
   selectedDate: string | null = null;
   editingAppointment: Appointment | null = null;
-  daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
+  daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   calendarDates: (number | null)[] = [];
   hours: string[] = [];
@@ -71,9 +70,8 @@ export class CalendarComponent {
 
   getAppointmentsForHour(hour: string): Appointment[] {
     if (!this.selectedDate) return [];
-    const appointments = this.appointmentService.getAppointmentsForDate(this.selectedDate);
-    console.log(appointments.filter(appointment => appointment.time.startsWith(hour)));
-    return appointments.filter(appointment => appointment.time.startsWith(hour));
+    return this.appointmentService.getAppointmentsForDate(this.selectedDate)
+      .filter(appointment => appointment.time.startsWith(hour));
   }
 
   selectDate(date: number | null) {
@@ -86,10 +84,6 @@ export class CalendarComponent {
 
   deleteAppointment(date: string, id: number) {
     this.appointmentService.deleteAppointment(date, id);
-  }
-
-  getAppointmentsForDate(date: string): Appointment[] {
-    return this.appointmentService.getAppointmentsForDate(date);
   }
 
   previousMonth() {
@@ -114,28 +108,15 @@ export class CalendarComponent {
 
   drop(event: CdkDragDrop<Appointment[]>) {
     if (this.selectedDate) {
-      const appointments = this.getAppointmentsForDate(this.selectedDate);
+      const appointments = this['getAppointmentsForDate'](this.selectedDate);
       moveItemInArray(appointments, event.previousIndex, event.currentIndex);
       this.appointmentService.updateAppointments(this.selectedDate, appointments);
     }
   }
 
-  startEditing(date: string, appointment: Appointment) {
-    this.editingAppointment = { ...appointment };
-    console.log(appointment);
-  }
-
-  handleAppointmentUpdated() {
-    this.editingAppointment = null;
-  }
-
-  handleEditCancelled() {
-    this.editingAppointment = null;
-  }
-
   drop2(event: CdkDragDrop<Appointment[]>, targetHour: string) {
     const appointments = this.getAppointmentsForHour(targetHour);
-    
+
     if (event.previousContainer === event.container) {
       moveItemInArray(appointments, event.previousIndex, event.currentIndex);
     } else {
@@ -153,11 +134,22 @@ export class CalendarComponent {
     this.appointmentService.updateAppointments(this.selectedDate!, appointments);
   }
 
+  startEditing(date: string, appointment: Appointment) {
+    this.editingAppointment = { ...appointment };
+  }
+
+  handleAppointmentUpdated() {
+    this.editingAppointment = null;
+  }
+
+  handleEditCancelled() {
+    this.editingAppointment = null;
+  }
+
   toggleDarkMode(isDarkMode: boolean) {
     this.isDarkMode = isDarkMode;
     localStorage.setItem('darkMode', String(this.isDarkMode));
     this.applyTheme();
-    console.log("Going dark!")
   }
 
   applyTheme() {
